@@ -153,7 +153,7 @@
     // Buton işlemleri
     window.handleOk = function () {
       const description = descriptionInput.value.trim();
-      alert("Test OK gönderildi\nAçıklama: " + (description || "Yok"));
+     
       
       submitQrData(modalResult.textContent, 'Test OK', description);
      
@@ -165,7 +165,7 @@
         alert("Lütfen bir açıklama girin. Test Fail için açıklama zorunludur.");
         return;
       }
-      alert("Test FAIL gönderildi\nAçıklama: " + description);
+     // alert("Test FAIL gönderildi\nAçıklama: " + description);
       submitQrData(modalResult.textContent, 'Test Fail', description);
     
     }
@@ -190,11 +190,22 @@
       .then(response => response.json())
       .then(data => {
         console.log('Başarılı:', data);
+        alert("Gonderildi!");
+        closeModalAndReset();
       })
       .catch((error) => {
         console.error('Hata:', error);
+        alert("Gonderilemedi!");
+        closeModalAndReset();
       });
     }
+
+    function closeModalAndReset() {
+  modal.style.display = 'none';
+  resultElem.textContent = "Henüz taranmadı";
+  modalResult.textContent = "";
+  descriptionInput.value = "";
+}
   </script>
 </body>
 </html>
