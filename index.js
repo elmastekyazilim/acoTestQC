@@ -8,9 +8,8 @@ const cors = require("cors"); // CORS modülünü dahil et
 const app = express();
 
 app.use(cors({
-    origin: 'https://192.168.1.11:3443' // Sadece bu domain'e izin verir
-  }));
-
+    origin: '*' // tüm cihazlardan gelen fetch isteklerine izin verir
+}));
 
   mongoose.connect('mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
@@ -62,6 +61,6 @@ const options = {
 
 // HTTPS Sunucu Başlatma
 const PORT = 3443;
-https.createServer(options, app).listen(PORT, () => {
-    console.log(`✅ HTTPS Sunucu çalışıyor: https://localhost:${PORT}`);
+https.createServer(options, app).listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ HTTPS Sunucu çalışıyor: https://0.0.0.0:${PORT}`);
 });
