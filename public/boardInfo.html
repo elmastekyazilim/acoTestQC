@@ -52,11 +52,41 @@
       border-radius: 8px;
       cursor: pointer;
     }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    select, .controls button {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+    }
   </style>
 </head>
 <body>
   <h1>Elmastek Aco Board Info</h1>
   <video id="qr-video" autoplay></video>
+
+  <div class="controls">
+    <select id="cam-list">
+      <option value="environment">Arka Kamera (Varsayılan)</option>
+      <option value="user">Ön Kamera</option>
+    </select>
+
+    <select id="inversion-mode-select">
+      <option value="original">Normal</option>
+      <option value="invert">Ters</option>
+      <option value="both" selected>Her İkisi</option>
+    </select>
+
+    <button id="flash-toggle" style="display:none">📸 Flaş: <span id="flash-state">Kapalı</span></button>
+  </div>
 
   <div id="info-modal" class="modal">
     <div class="modal-content">
@@ -75,6 +105,10 @@
     QrScanner.WORKER_PATH = './qr-scanner-worker.min.js';
 
     const video = document.getElementById('qr-video');
+    const camList = document.getElementById('cam-list');
+    const inversionSelect = document.getElementById('inversion-mode-select');
+    const flashToggle = document.getElementById('flash-toggle');
+    const flashState = document.getElementById('flash-state');
 
     const scanner = new QrScanner(video, result => {
       const qrData = result.data || result;
@@ -95,8 +129,37 @@
       highlightCodeOutline: true
     });
 
-    scanner.setInversionMode('both');
-    scanner.start();
+    scanner.start().then(() => {
+      QrScanner.listCameras(true).then(cameras => {
+        cameras.forEach(camera => {
+          const option = document.createElement('option');
+          option.value = camera.id;
+          option.text = camera.label;
+          camList.appendChild(option);
+        });
+      });
+      updateFlashAvailability();
+    });
+
+    function updateFlashAvailability() {
+      scanner.hasFlash().then(hasFlash => {
+        flashToggle.style.display = hasFlash ? 'inline-block' : 'none';
+      });
+    }
+
+    camList.addEventListener('change', () => {
+      scanner.setCamera(camList.value).then(updateFlashAvailability);
+    });
+
+    inversionSelect.addEventListener('change', () => {
+      scanner.setInversionMode(inversionSelect.value);
+    });
+
+    flashToggle.addEventListener('click', () => {
+      scanner.toggleFlash().then(() => {
+        flashState.textContent = scanner.isFlashOn() ? 'Açık' : 'Kapalı';
+      });
+    });
 
     function showModal(data) {
       document.getElementById('qrDataText').textContent = data.qrData;
