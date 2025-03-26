@@ -37,19 +37,26 @@ app.post('/submit-qr-data', async (req, res) => {
     const { qrData, result, description } = req.body;
 
     try {
+        const existingRecord = await QrRecord.findOne({ qrData });
+
+        let updatedDescription = description;
+        if (existingRecord && existingRecord.description) {
+            updatedDescription = existingRecord.description + "\n" + description;
+        }
+
         await QrRecord.findOneAndUpdate(
-            { qrData: qrData }, // Sorgu: qrData'ya göre arar
+            { qrData },
             {
                 qrData,
                 result,
-                description,
+                description: updatedDescription,
                 timestamp: new Date(),
                 username: 'staticUser'
             },
-            { upsert: true, new: true } // varsa güncelle, yoksa oluştur
+            { upsert: true, new: true }
         );
 
-        res.status(200).send({ message: 'Veri başarıyla güncellendi veya eklendi.' });
+        res.status(200).send({ message: 'Veri başarıyla eklendi veya güncellendi (açıklama birleştirildi).' });
     } catch (err) {
         console.error('DB hatası:', err);
         res.status(500).send({ message: 'Veri işlenirken bir hata oluştu.', error: err });
