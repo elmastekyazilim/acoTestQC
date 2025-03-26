@@ -41,6 +41,13 @@
       border-radius: 12px;
       background-color: #000000;
     }
+    #camera-select {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      font-family: inherit;
+    }
     #result {
       margin-top: 20px;
       font-size: 1rem;
@@ -109,6 +116,7 @@
   <h1>ELMASTEK ACO QC APP</h1>
   <div class="scanner-container">
     <video id="qr-video" autoplay></video>
+    <select id="camera-select"></select>
     <p id="result">QR Sonucu: <span id="qr-result">Henüz taranmadı</span></p>
   </div>
 
@@ -134,6 +142,7 @@
     const modal = document.getElementById('result-modal');
     const modalResult = document.getElementById('modal-qr-result');
     const descriptionInput = document.getElementById('description');
+    const cameraSelect = document.getElementById('camera-select');
 
     const scanner = new QrScanner(video, result => {
       const resultText = result.data || result;
@@ -150,13 +159,31 @@
     scanner.setInversionMode('both');
     scanner.start();
 
+    // Kamera listesini yükle
+    QrScanner.listCameras(true).then(cameras => {
+      cameras.forEach((camera, index) => {
+        const option = document.createElement('option');
+        option.value = camera.id;
+        option.text = camera.label || `Kamera ${index + 1}`;
+        cameraSelect.appendChild(option);
+      });
+
+      if (cameras[0]) {
+        scanner.setCamera(cameras[0].id);
+        cameraSelect.value = cameras[0].id;
+      }
+    });
+
+    // Kamera seçimi değiştiğinde
+    cameraSelect.addEventListener('change', () => {
+      const selectedCameraId = cameraSelect.value;
+      scanner.setCamera(selectedCameraId);
+    });
+
     // Buton işlemleri
     window.handleOk = function () {
       const description = descriptionInput.value.trim();
-     
-      
       submitQrData(modalResult.textContent, 'Test OK', description);
-     
     }
 
     window.handleFail = function () {
@@ -165,14 +192,10 @@
         alert("Lütfen bir açıklama girin. Test Fail için açıklama zorunludur.");
         return;
       }
-     // alert("Test FAIL gönderildi\nAçıklama: " + description);
       submitQrData(modalResult.textContent, 'Test Fail', description);
-    
     }
 
- 
-
-    // Fetch API ile veriyi backend'e gönderme
+    // Veri gönderimi
     function submitQrData(qrData, result, description) {
       const data = {
         qrData: qrData,
@@ -190,22 +213,22 @@
       .then(response => response.json())
       .then(data => {
         console.log('Başarılı:', data);
-        alert("Gonderildi!");
+        alert("Gönderildi!");
         closeModalAndReset();
       })
       .catch((error) => {
         console.error('Hata:', error);
-        alert("Gonderilemedi!");
+        alert("Gönderilemedi!");
         closeModalAndReset();
       });
     }
 
     function closeModalAndReset() {
-  modal.style.display = 'none';
-  resultElem.textContent = "Henüz taranmadı";
-  modalResult.textContent = "";
-  descriptionInput.value = "";
-}
+      modal.style.display = 'none';
+      resultElem.textContent = "Henüz taranmadı";
+      modalResult.textContent = "";
+      descriptionInput.value = "";
+    }
   </script>
 </body>
 </html>
