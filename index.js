@@ -8,7 +8,7 @@ const cors = require("cors"); // CORS modülünü dahil et
 const app = express();
 
 app.use(cors({
-    origin: 'https://acotestqc-production.up.railway.app' // tüm cihazlardan gelen fetch isteklerine izin verir
+    origin: '*' // tüm cihazlardan gelen fetch isteklerine izin verir
 }));
 
   mongoose.connect('mongodb+srv://elmastekyazilim:8Rug3mWAC6Exkgh@cluster0.oswmayz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
