@@ -157,7 +157,18 @@
     });
 
     scanner.setInversionMode('both');
-    scanner.start();
+    scanner.start().then(() => {
+  const track = scanner._activeStream?.getVideoTracks()[0];
+  if (track && typeof track.applyConstraints === 'function') {
+    track.applyConstraints({
+      advanced: [{ focusMode: 'continuous' }]
+    }).then(() => {
+      console.log('Otomatik odaklama aktif.');
+    }).catch(err => {
+      console.warn('Otomatik odaklama desteklenmiyor:', err);
+    });
+  }
+});
 
     // Kamera listesini yükle
     QrScanner.listCameras(true).then(cameras => {
