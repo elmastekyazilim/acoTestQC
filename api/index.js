@@ -63,9 +63,30 @@ app.post('/submit-qr-data', async (req, res) => {
     }
 });
 
+app.post('/get-qr-data', async (req, res) => {
+    const { qrData } = req.body;
+
+    try {
+        const record = await QrRecord.findOne({ qrData });
+
+        if (!record) {
+            return res.status(404).send({ message: 'Kayıt bulunamadı.' });
+        }
+
+        res.status(200).send(record);
+    } catch (err) {
+        console.error('Veri çekme hatası:', err);
+        res.status(500).send({ message: 'Sunucu hatası', error: err });
+    }
+});
+
 // Statik HTML dosyasını sunma
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
+
+app.get("/boardInfo", (req, res) => {
+    res.sendFile(path.join(__dirname, "../public", "boardInfo.html"));
 });
 
 // SSL Sertifika ayarları
