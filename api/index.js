@@ -30,7 +30,7 @@ const QrRecord = mongoose.model('QrRecord', new mongoose.Schema({
 
 // JSON verilerini almak için body-parser kullanımı
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "./public")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 // API Endpoint'i: QR verisini MongoDB'ye kaydet
 app.post('/submit-qr-data', (req, res) => {
@@ -50,7 +50,7 @@ app.post('/submit-qr-data', (req, res) => {
 
 // Statik HTML dosyasını sunma
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "./public", "index.html"));
+    res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
 // SSL Sertifika ayarları
