@@ -1,14 +1,9 @@
 {
+  
   "name": "testsoftwarev2",
   "version": "1.0.0",
-  "description": "",
+  "description": "Vercel üzerinde çalışan Express.js API",
   "main": "api/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
@@ -16,5 +11,11 @@
     "express-session": "^1.18.1",
     "mongoose": "^8.13.0",
     "qr-scanner": "^1.4.2"
-  }
+  },
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js"
+  },
+  "author": "ElmasTek Yazılım",
+  "license": "MIT"
 }
