@@ -33,19 +33,27 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
 // API Endpoint'i: QR verisini MongoDB'ye kaydet
-app.post('/submit-qr-data', (req, res) => {
-    
+app.post('/submit-qr-data', async (req, res) => {
     const { qrData, result, description } = req.body;
-    console.log(qrData);
-    const newQrRecord = new QrRecord({
-        qrData: qrData,
-        result: result, // "Test OK" veya "Test Fail"
-        description: description,
-    });
 
-    newQrRecord.save()
-        .then(() => res.status(201).send({ message: 'Veri başarıyla kaydedildi.' }))
-        .catch(err => res.status(500).send({ message: 'Veri kaydedilirken bir hata oluştu.', error: err }));
+    try {
+        await QrRecord.findOneAndUpdate(
+            { qrData: qrData }, // Sorgu: qrData'ya göre arar
+            {
+                qrData,
+                result,
+                description,
+                timestamp: new Date(),
+                username: 'staticUser'
+            },
+            { upsert: true, new: true } // varsa güncelle, yoksa oluştur
+        );
+
+        res.status(200).send({ message: 'Veri başarıyla güncellendi veya eklendi.' });
+    } catch (err) {
+        console.error('DB hatası:', err);
+        res.status(500).send({ message: 'Veri işlenirken bir hata oluştu.', error: err });
+    }
 });
 
 // Statik HTML dosyasını sunma
