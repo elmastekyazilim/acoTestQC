@@ -61,6 +61,6 @@ const options = {
 
 // HTTPS Sunucu Başlatma
 const PORT = 3000;
-https.createServer(options, app).listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ HTTPS Sunucu çalışıyor: https://0.0.0.0:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server ${PORT} port çalışıyor`);
 });
